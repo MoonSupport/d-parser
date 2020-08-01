@@ -1,19 +1,5 @@
-interface AST {
-  name?: string
-  type: string
-  text?: string
-  children?: AST[]
-}
-
-interface ASTStack {
-  tag: AST
-  back?: ASTStack
-}
-
-enum Type {
-  TEXT = 'TEXT',
-  NODE = 'NODE',
-}
+import { AST, ASTStack, Type } from './type'
+import { processTextNode, processElementNode } from './process'
 
 const ROOT = 'ROOT'
 
@@ -56,47 +42,4 @@ export default (input: string): AST => {
   }
 
   return result
-}
-function processElementNode(
-  input: string,
-  endIndex: number,
-  cursor: number,
-  curr: ASTStack,
-  stack: ASTStack[],
-): boolean {
-  //   let name
-  //   let isClose
-  //   if (input[endIndex - 1] === '/') {
-  //     name = input.substring(cursor + 1, endIndex - 1)
-  //     isClose = true
-  //   } else {
-  //     name = input.substring(cursor + 1, endIndex)
-  //     isClose = false
-  //   }
-  //   const tag = {
-  //     name,
-  //     type: 'node',
-  //     children: [],
-  //   }
-  const isClose = input[endIndex - 1] === '/'
-  const tag = {
-    name: input.substring(cursor + 1, endIndex - (isClose ? 1 : 0)),
-    type: 'node',
-    children: [],
-  }
-  curr.tag.children.push(tag)
-  if (!isClose) {
-    stack.push({ tag, back: curr })
-    return false
-  }
-  return true
-}
-
-function processTextNode(input: string, cursor: number, curr: ASTStack): number {
-  const nextStartIndex = input.indexOf('<', cursor)
-  curr.tag.children.push({
-    type: Type.TEXT,
-    text: input.substring(cursor, nextStartIndex),
-  })
-  return nextStartIndex
 }
