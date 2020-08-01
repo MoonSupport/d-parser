@@ -59,17 +59,23 @@ function processElementNode(
   curr: any,
   stack: ASTStack[],
 ) {
-  let name
-  let isClose
-  if (input[endIndex - 1] === '/') {
-    name = input.substring(cursor + 1, endIndex - 1)
-    isClose = true
-  } else {
-    name = input.substring(cursor + 1, endIndex)
-    isClose = false
-  }
+  //   let name
+  //   let isClose
+  //   if (input[endIndex - 1] === '/') {
+  //     name = input.substring(cursor + 1, endIndex - 1)
+  //     isClose = true
+  //   } else {
+  //     name = input.substring(cursor + 1, endIndex)
+  //     isClose = false
+  //   }
+  //   const tag = {
+  //     name,
+  //     type: 'node',
+  //     children: [],
+  //   }
+  const isClose = input[endIndex - 1] === '/'
   const tag = {
-    name,
+    name: input.substring(cursor + 1, endIndex - (isClose ? 1 : 0)),
     type: 'node',
     children: [],
   }
