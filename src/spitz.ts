@@ -1,7 +1,8 @@
 interface AST {
-  name: string
+  name?: string
   type: string
-  children: AST[]
+  text?: string
+  children?: AST[]
 }
 
 interface ASTStack {
@@ -60,9 +61,9 @@ function processElementNode(
   input: string,
   endIndex: number,
   cursor: number,
-  curr: any,
+  curr: ASTStack,
   stack: ASTStack[],
-) {
+): boolean {
   //   let name
   //   let isClose
   //   if (input[endIndex - 1] === '/') {
@@ -91,7 +92,7 @@ function processElementNode(
   return true
 }
 
-function processTextNode(input: string, cursor: number, curr: any) {
+function processTextNode(input: string, cursor: number, curr: ASTStack): number {
   const nextStartIndex = input.indexOf('<', cursor)
   curr.tag.children.push({
     type: Type.TEXT,
