@@ -32,7 +32,6 @@ export default function parse(html, options = {}) {
     if (isComment) {
       const comment = parseTag(tag)
 
-      // 탑 레벨이라면
       if (isTopLevel(level)) {
         result.push(comment)
         return
@@ -74,7 +73,7 @@ export default function parse(html, options = {}) {
 
     if (isCloseTag || currentTag.voidElement) {
       if (isNextTag(level, currentTag, tag)) {
-        level-- // 한 레벨 올라감
+        level--
       }
 
       if (isNextText(isInComponent, nextChar)) {
@@ -82,7 +81,6 @@ export default function parse(html, options = {}) {
 
         const end = html.indexOf('<', nextStartIndex)
         const content = html.slice(nextStartIndex, end === -1 ? undefined : end)
-        // if a node is nothing but whitespace, no need to add it.
         if (!WIHTESPACE.test(content)) {
           parent.push({
             type: 'text',
@@ -100,10 +98,7 @@ function isNextText(isInComponent: boolean, nextChar: any) {
 }
 
 function isNextTag(level: number, currentTag: any, tag: any) {
-  return (
-    level > -1 && // 루트가 아니고
-    (currentTag.voidElement || isClose(currentTag, tag))
-  )
+  return level > -1 && (currentTag.voidElement || isClose(currentTag, tag))
 }
 
 function isTextNode(currentTag, isInComponent, nextChar) {
