@@ -10,19 +10,23 @@ interface ASTStack {
 }
 
 enum Type {
-  TEXT,
+  TEXT = 'TEXT',
+  NODE = 'NODE',
 }
+
+const ROOT = 'ROOT'
 
 export default (input: string): AST => {
   input = input.trim()
 
   const result: AST = {
-    name: 'ROOT',
-    type: 'node',
+    name: ROOT,
+    type: Type.NODE,
     children: [],
   }
+
   const stack: ASTStack[] = [{ tag: result }]
-  let curr
+  let curr: ASTStack
   let i = 0
   const j = input.length
   while ((curr = stack.pop())) {
