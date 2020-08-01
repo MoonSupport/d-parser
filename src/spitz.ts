@@ -26,30 +26,30 @@ export default (input: string): AST => {
   }
 
   const stack: ASTStack[] = [{ tag: result }]
-  let curr: ASTStack
-  let i = 0
-  const j = input.length
-  while ((curr = stack.pop())) {
-    while (i < j) {
-      const cursor = i
+  let currentStack: ASTStack
+  let globalCursor = 0
+  const htmlLength = input.length
+  while ((currentStack = stack.pop())) {
+    while (globalCursor < htmlLength) {
+      const cursor = globalCursor
       if (input[cursor] === '<') {
         const endIndex = input.indexOf('>', cursor)
-        i = endIndex + 1
+        globalCursor = endIndex + 1
         if (input[cursor + 1] === '/') {
-          curr = curr.back
+          currentStack = currentStack.back
         } else {
           const isVoidElement = processElementNode(
             input,
             endIndex,
             cursor,
-            curr,
+            currentStack,
             stack,
           )
           if (!isVoidElement) break
         }
       } else {
-        const nextStartIndex = processTextNode(input, cursor, curr)
-        i = nextStartIndex
+        const nextStartIndex = processTextNode(input, cursor, currentStack)
+        globalCursor = nextStartIndex
       }
     }
   }
