@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "yarn build && node src/index.ts",
+    "start": "yarn build && node build/index.js",
     "build": "tsc --build tsconfig.lib.json",
     "lint": "eslint 'src/**/*.{js,ts}' --quiet",
     "lint:fix": "yarn lint --fix",
