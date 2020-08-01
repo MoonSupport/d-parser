@@ -8,7 +8,10 @@ export function processTextNode(
   const nextStartIndex = input.indexOf('<', cursor)
   curr.tag.children.push({
     type: Type.TEXT,
-    text: input.substring(cursor, nextStartIndex),
+    text: input.substring(
+      cursor,
+      nextStartIndex > -1 ? nextStartIndex : input.length,
+    ),
   })
   return nextStartIndex
 }
