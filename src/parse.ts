@@ -2,6 +2,7 @@ import parseTag from './parse-tag'
 
 // eslint-disable-next-line no-useless-escape
 const tagRE = /<[a-zA-Z\-\!\/](?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])*>/g
+const WIHTESPACE = /^\s*$/
 const TOP_LEVEL = -1
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -77,18 +78,12 @@ export default function parse(html, options = {}) {
       }
 
       if (isNextText(isInComponent, nextChar)) {
-        // 컴포넌트가 아니고 다음 문자열이 태그가 아니고 다음 문자열이 있다면
-        // trailing text node
-        // if we're at the root, push a base text node. otherwise add as
-        // a child to the current node.
         parent = level === -1 ? result : tmpTree[level].children
 
-        // calculate correct end of the content slice in case there's
-        // no tag after the text node.
         const end = html.indexOf('<', nextStartIndex)
         const content = html.slice(nextStartIndex, end === -1 ? undefined : end)
         // if a node is nothing but whitespace, no need to add it.
-        if (!/^\s*$/.test(content)) {
+        if (!WIHTESPACE.test(content)) {
           parent.push({
             type: 'text',
             content: content,
@@ -97,10 +92,6 @@ export default function parse(html, options = {}) {
       }
     }
   })
-
-  console.log('result', result)
-  console.log('arr', tmpTree)
-
   return
 }
 
