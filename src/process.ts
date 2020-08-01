@@ -1,4 +1,4 @@
-import { Type, ASTStack } from './type'
+import { Type, ASTStack, AST } from './type'
 
 export function processTextNode(
   input: string,
@@ -23,7 +23,7 @@ export function processElementNode(
   const isClose = input[endIndex - 1] === '/'
   const tag = {
     name: input.substring(cursor + 1, endIndex - (isClose ? 1 : 0)),
-    type: 'node',
+    type: Type.NODE,
     children: [],
   }
   curr.tag.children.push(tag)
@@ -32,4 +32,8 @@ export function processElementNode(
     return false
   }
   return true
+}
+
+export function initRootStack(result: AST): ASTStack[] {
+  return [{ tag: result }]
 }

@@ -1,7 +1,8 @@
 import { AST, ASTStack, Type } from './type'
-import { processTextNode, processElementNode } from './process'
+import { processTextNode, processElementNode, initRootStack } from './process'
 
 const ROOT = 'ROOT'
+const INIT_CURSOR = 0
 
 export default (input: string): AST => {
   input = input.trim()
@@ -12,10 +13,13 @@ export default (input: string): AST => {
     children: [],
   }
 
-  const stack: ASTStack[] = [{ tag: result }]
+  const stack: ASTStack[] = initRootStack(result)
+
   let currentStack: ASTStack
-  let globalCursor = 0
+  let globalCursor = INIT_CURSOR
+
   const htmlLength = input.length
+
   while ((currentStack = stack.pop())) {
     while (globalCursor < htmlLength) {
       const cursor = globalCursor
