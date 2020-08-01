@@ -14,17 +14,14 @@ export default function parse(html, options = {}) {
   let level = TOP_LEVEL
   let isInComponent = false
 
-  // 완전 첫번째 루틴에 적용
   result.push(getFirstNodeByToken(html))
 
   html.replace(tagRE, function (tag, index) {
-    const isOpenAndVoid = tag.charAt(1) === '/'
+    const isCloseTag = tag.charAt(1) === '/'
     const isComment = tag.startsWith('<!--')
     const nextStartIndex = index + tag.length
     const nextChar = html.charAt(nextStartIndex)
-    console.log('태그:', tag, '보이드:', isOpenAndVoid)
 
-    //컴포넌트 안에서는
     if (isInComponent) {
       isInComponent = validateComponent(tag, currentTag)
     }
@@ -45,7 +42,7 @@ export default function parse(html, options = {}) {
       return
     }
 
-    if (isOpenAndVoid) {
+    if (!isCloseTag) {
       level++
       currentTag = parseTag(tag)
 
@@ -65,24 +62,21 @@ export default function parse(html, options = {}) {
         result.push(currentTag)
       }
 
-      parent = tmpTree[level - 1] // 한 레벨 위가 부모
+      parent = tmpTree[level - 1]
 
       if (parent) {
         parent.children.push(currentTag)
       }
 
-      tmpTree[level] = currentTag // 현재 레벨이 현재
+      tmpTree[level] = currentTag
     }
 
-    if (!isOpenAndVoid || currentTag.voidElement) {
-      // 열린 태그가 아니거나, 보이드 태그라면
-      if (
-        level > -1 && // 루트가 아니고
-        (currentTag.voidElement || isClose(currentTag, tag)) // 보이드거나, 현재 태그가 닫히는 태그라면
-      ) {
+    if (isCloseTag || currentTag.voidElement) {
+      if (isNextTag(level, currentTag, tag)) {
         level-- // 한 레벨 올라감
       }
-      if (!isInComponent && nextChar !== '<' && nextChar) {
+
+      if (isNextText(isInComponent, nextChar)) {
         // 컴포넌트가 아니고 다음 문자열이 태그가 아니고 다음 문자열이 있다면
         // trailing text node
         // if we're at the root, push a base text node. otherwise add as
@@ -108,6 +102,17 @@ export default function parse(html, options = {}) {
   console.log('arr', tmpTree)
 
   return
+}
+
+function isNextText(isInComponent: boolean, nextChar: any) {
+  return !isInComponent && nextChar !== '<' && nextChar
+}
+
+function isNextTag(level: number, currentTag: any, tag: any) {
+  return (
+    level > -1 && // 루트가 아니고
+    (currentTag.voidElement || isClose(currentTag, tag))
+  )
 }
 
 function isTextNode(currentTag, isInComponent, nextChar) {
