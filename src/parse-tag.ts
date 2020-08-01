@@ -2,7 +2,7 @@ import lookup from 'void-elements'
 const attrRE = /\s([^'"/\s><]+?)[\s/>]|([^\s=]+)=\s?(".*?"|'.*?')/g
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export default function stringify(tag) {
+export default function parseTag(tag) {
   const res = {
     type: 'tag',
     name: '',
