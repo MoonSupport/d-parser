@@ -1,5 +1,5 @@
 
-name: Build @weport/api
+name: Build D-PARSER
 
 on:
   push:
