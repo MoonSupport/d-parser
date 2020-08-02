@@ -25,7 +25,7 @@ export function processElementNode(
 ): boolean {
   const isClose = input[endIndex - 1] === '/'
   const tag = {
-    name: input.substring(cursor + 1, endIndex - (isClose ? 1 : 0)),
+    name: input.substring(cursor + 1, endIndex - (isClose ? 1 : 0)).trim(),
     type: Type.NODE,
     children: [],
   }

@@ -25,8 +25,8 @@ export default (input: string): AST => {
       const cursor = globalCursor
       if (input[cursor] === '<') {
         const endIndex = input.indexOf('>', cursor)
-        globalCursor = endIndex + 1
-        if (input[cursor + 1] === '/') {
+        globalCursor = getNextStartIndex(endIndex)
+        if (isCloseTag(input, cursor)) {
           currentStack = currentStack.back
         } else {
           const isVoidElement = processElementNode(
@@ -46,4 +46,11 @@ export default (input: string): AST => {
   }
 
   return result
+}
+function getNextStartIndex(endIndex: number): number {
+  return endIndex + 1
+}
+
+function isCloseTag(input: string, cursor: number) {
+  return input[cursor + 1] === '/'
 }
