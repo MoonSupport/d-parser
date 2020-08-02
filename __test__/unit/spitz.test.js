@@ -60,10 +60,31 @@ describe('process', function () {
         currentStack,
         stack,
       )
+      assert.equal(isClose, true)
       assert.deepEqual(result, {
         name: 'ROOT',
         type: 'NODE',
-        children: [{ name: 'img ', type: 'NODE', children: [] }],
+        children: [{ name: 'img', type: 'NODE', children: [] }],
+      })
+    })
+
+    it('open Element', function () {
+      const result = {
+        name: 'ROOT',
+        type: Type.NODE,
+        children: [],
+      }
+      const stack = initRootStack(result)
+      const element = `<div>test<div/>`
+      const endIndex = element.indexOf('>', 0)
+      const currentStack = stack.pop()
+      const isClose = processElementNode(element, endIndex, 0, currentStack, stack)
+      console.log('result', result)
+      assert.equal(isClose, false)
+      assert.deepEqual(result, {
+        name: 'ROOT',
+        type: 'NODE',
+        children: [{ name: 'div', type: 'NODE', children: [] }],
       })
     })
   })
