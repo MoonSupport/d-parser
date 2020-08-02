@@ -4,5 +4,6 @@
   "files.associations": {
     ".sequelizerc": "javascript"
   },
-  "git.ignoreLimitWarning": true
+  "git.ignoreLimitWarning": true,
+  "editor.minimap.enabled": false
 }
