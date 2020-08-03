@@ -1,4 +1,4 @@
-import parser from './spitz'
+import parser from './parser'
 
 const dic = `
 <DIC>
