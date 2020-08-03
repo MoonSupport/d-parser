@@ -11,7 +11,7 @@ describe('process', function () {
   describe('Util Test', function () {
     it('read Mock', function () {
       assert(
-        fs.readFileSync('./__test__/mock.html', {
+        fs.readFileSync('./__test__/unit/mock.html', {
           encoding: 'utf8',
         }),
       )
@@ -79,7 +79,6 @@ describe('process', function () {
       const endIndex = element.indexOf('>', 0)
       const currentStack = stack.pop()
       const isClose = processElementNode(element, endIndex, 0, currentStack, stack)
-      console.log('result', result)
       assert.equal(isClose, false)
       assert.deepEqual(result, {
         name: 'ROOT',
