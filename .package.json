@@ -1,0 +1,14 @@
+{
+  "name": "d-html-parser",
+  "version": "1.0.2",
+  "description": "This is HTML Parser",
+  "keywords": ["html", "parser", "node"],
+  "homepage": "https://github.com/MoonSupport/d-parser",
+  "main": "build/parser.js",
+  "types": "build/parser.d.ts",
+  "author": "MoonSupport",
+  "license": "ISC",
+  "dependencies": {
+    "tslib": "1.13.0"
+  }
+}

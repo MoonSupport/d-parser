@@ -1,8 +1,13 @@
 {
-  "name": "d-parser",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "d-html-parser",
+  "version": "1.0.2",
+  "description": "This is HTML Parser",
+  "keywords": [
+    "html",
+    "parser",
+    "node"
+  ],
+  "homepage": "https://github.com/MoonSupport/d-parser",
   "scripts": {
     "start": "yarn build && node build/index.js",
     "build": "tsc --build tsconfig.lib.json",
@@ -12,7 +17,9 @@
     "mocha": "mocha __test__/**/*.js --recursive",
     "coverage": "nyc  --reporter=lcov mocha __test__/**/*.js --recursive "
   },
-  "author": "",
+  "main": "build/parser.js",
+  "types": "build/parser.d.ts",
+  "author": "MoonSupport",
   "license": "ISC",
   "dependencies": {
     "@types/node": "^14.0.27",
