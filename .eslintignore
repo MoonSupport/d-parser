@@ -7,3 +7,4 @@ __test__
 # Built files
 build
 lib
+*.js
