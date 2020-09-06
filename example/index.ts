@@ -1,5 +1,5 @@
-const fs = require('fs')
-const parser = require('../src/parser.js').default
+import fs from 'fs'
+import parser from '../src/parser.js'
 
 const f = fs.readFileSync('../DIC/A/Adapter.md').toString()
 const ast = parser(f)
@@ -43,6 +43,8 @@ function nomalizeKey(text) {
   return text.trim().match(regex).join('').substr(':')
 }
 
+console.log(content.children[1])
+
 const result = `
 ---
 title:${nomalize(titleText)}
@@ -54,10 +56,9 @@ slug: "/${nomalize(titleText)[0]}/${nomalize(titleText)}"
 ---
 
 <content>
-
+${content}
 </content>
 `
-console.log('result', result)
 
 // ---
 // title: "Adapter"
