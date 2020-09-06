@@ -9,7 +9,6 @@ const title = getAChildTarget(ast, 'd-title')
 const origin = getAChildTarget(ast, 'd-origin')
 const mean = getAChildTarget(ast, 'd-mean')
 const pronunciation = getAChildTarget(ast, 'd-pronunciation')
-const content = getAChildTarget(ast, 'd-content')
 const relation = getAChildTarget(ast, 'd-relation')
 
 const titleText = getAChildTarget(title, 'TEXT').text
@@ -76,8 +75,7 @@ const uglyHtml = html.replace(regex, '')
 const contentRegex = new RegExp('<d-content>.*</d-content>', 'g')
 
 const uglyContent = uglyHtml.match(contentRegex)[0]
-console.log(uglyContent)
-console.log(uglyContent.slice(12, -12))
+const content = uglyContent.slice(15, -15)
 
 const result = `
 ---
