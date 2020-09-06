@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { parser } from '../src/index'
+import showdown from 'showdown'
 
 const f = fs.readFileSync(path.join(__dirname, '../', 'DIC/A/Adapter.md')).toString()
 const ast = parser(f)
