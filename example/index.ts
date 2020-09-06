@@ -57,24 +57,21 @@ function nomalizeKey(text) {
 
 function loopGet(target) {
   const rootChildren = target.children
-  rootChildren.map((child) => {
+  return rootChildren.map((child) => {
     const d = getChildrenTarget(child, 'd-inner')
     if (!d) return
     const rd = getAChildTarget(d, 'TEXT').text
-    console.log(rd.slice(5))
-    // return rd.split(2)
+    return nomalize(rd.slice(5))
   })
 }
 
-const a = loopGet(relation)
-console.log(a)
 const result = `
 ---
 title:${nomalize(titleText)}
 origin: ${nomalizeKey(originText)}
 pronunciation: ${nomalizeKey(pronunciationText)}
 mean: ${nomalizeKey(meanText)}
-relation: []
+relation: [${loopGet(relation).filter((t) => t)}]
 slug: "/${nomalize(titleText)[0]}/${nomalize(titleText)}"
 ---
 
