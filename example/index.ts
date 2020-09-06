@@ -69,6 +69,8 @@ function loopGet(target) {
 const converter = new showdown.Converter()
 const html = converter.makeHtml(f)
 
+console.log(html)
+
 const result = `
 ---
 title:${nomalize(titleText)}
