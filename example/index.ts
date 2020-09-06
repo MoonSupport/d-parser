@@ -4,29 +4,40 @@ import { parser } from '../src/index'
 
 const f = fs.readFileSync(path.join(__dirname, '../', 'DIC/A/Adapter.md')).toString()
 const ast = parser(f)
-const title = getChildTarget(ast, 'd-title')
-const origin = getChildTarget(ast, 'd-origin')
-const mean = getChildTarget(ast, 'd-mean')
-const pronunciation = getChildTarget(ast, 'd-pronunciation')
-const content = getChildTarget(ast, 'd-content')
-const relation = getChildTarget(ast, 'd-relation')
+const title = getAChildTarget(ast, 'd-title')
+const origin = getAChildTarget(ast, 'd-origin')
+const mean = getAChildTarget(ast, 'd-mean')
+const pronunciation = getAChildTarget(ast, 'd-pronunciation')
+const content = getAChildTarget(ast, 'd-content')
+const relation = getAChildTarget(ast, 'd-relation')
 
-const titleText = getChildTarget(title, 'TEXT').text
-const originText = getChildTarget(origin, 'TEXT').text
-const pronunciationText = getChildTarget(pronunciation, 'TEXT').text
-let meanText = getChildTarget(mean, 'span')
+const titleText = getAChildTarget(title, 'TEXT').text
+const originText = getAChildTarget(origin, 'TEXT').text
+const pronunciationText = getAChildTarget(pronunciation, 'TEXT').text
+let meanText = getAChildTarget(mean, 'span')
 
 if (meanText && meanText.children && meanText.children.length > 0) {
-  meanText = getChildTarget(meanText, 'TEXT').text
+  meanText = getAChildTarget(meanText, 'TEXT').text
 } else {
-  meanText = getChildTarget(mean, 'TEXT').text
+  meanText = getAChildTarget(mean, 'TEXT').text
 }
 
-function getChildTarget(ast, target) {
+function getAChildTarget(ast, target) {
+  if (!ast || !ast.children) {
+    return
+  }
   return ast.children.filter((value) => {
     if (value.name) return value.name == target
     if (value.type) return value.type == target
   })[0]
+}
+
+function getChildrenTarget(ast, target) {
+  if (!ast) {
+    return
+  }
+  if (ast.name == target) return ast
+  if (ast.type == target) return ast
 }
 
 function nomalize(text) {
@@ -44,8 +55,19 @@ function nomalizeKey(text) {
   return text.trim().match(regex).join('').substr(':')
 }
 
-console.log('relation', relation)
+function loopGet(target) {
+  const rootChildren = target.children
+  rootChildren.map((child) => {
+    const d = getChildrenTarget(child, 'd-inner')
+    if (!d) return
+    const rd = getAChildTarget(d, 'TEXT').text
+    console.log(rd.slice(5))
+    // return rd.split(2)
+  })
+}
 
+const a = loopGet(relation)
+console.log(a)
 const result = `
 ---
 title:${nomalize(titleText)}
