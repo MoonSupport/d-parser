@@ -69,7 +69,15 @@ function loopGet(target) {
 const converter = new showdown.Converter()
 const html = converter.makeHtml(f)
 
-console.log(html)
+const regex = new RegExp('\n', 'g')
+
+const uglyHtml = html.replace(regex, '')
+
+const contentRegex = new RegExp('<d-content>.*</d-content>', 'g')
+
+const uglyContent = uglyHtml.match(contentRegex)[0]
+console.log(uglyContent)
+console.log(uglyContent.slice(12, -12))
 
 const result = `
 ---
