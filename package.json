@@ -10,7 +10,7 @@
   "homepage": "https://github.com/MoonSupport/d-parser",
   "scripts": {
     "start": "yarn build && node build/index.js",
-    "ex": "typescript example/index.ts",
+    "ex": "ts-node example/index.ts",
     "build": "tsc --build tsconfig.lib.json",
     "lint": "eslint 'src/**/*.{js,ts}' --quiet",
     "lint:fix": "yarn lint --fix",

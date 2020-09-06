@@ -1,8 +1,8 @@
-/* eslint-disable */
 import fs from 'fs'
-import parser from '../src/parser.js'
+import path from 'path'
+import { parser } from '../src/index'
 
-const f = fs.readFileSync('../DIC/A/Adapter.md').toString()
+const f = fs.readFileSync(path.join(__dirname, '../', 'DIC/A/Adapter.md')).toString()
 const ast = parser(f)
 const title = getChildTarget(ast, 'd-title')
 const origin = getChildTarget(ast, 'd-origin')
@@ -44,7 +44,7 @@ function nomalizeKey(text) {
   return text.trim().match(regex).join('').substr(':')
 }
 
-console.log(content.children[1])
+console.log('relation', relation)
 
 const result = `
 ---
@@ -60,6 +60,8 @@ slug: "/${nomalize(titleText)[0]}/${nomalize(titleText)}"
 ${content}
 </content>
 `
+
+console.log('result', result)
 
 // ---
 // title: "Adapter"

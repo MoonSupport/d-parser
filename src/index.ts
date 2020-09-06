@@ -1,2 +1,1 @@
-import parser from './parser'
-export default parser
+export { default as parser } from './parser'
