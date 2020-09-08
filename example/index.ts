@@ -3,9 +3,12 @@ import path from 'path'
 import { parser } from '../src/index'
 import showdown from 'showdown'
 
-const f = fs.readFileSync(path.join(__dirname, '../', 'DIC/A/Adapter.md')).toString()
+const f = fs
+  .readFileSync(path.join(__dirname, '../', 'DIC/A/Agnostic.md'))
+  .toString()
 const ast = parser(f)
 const title = getAChildTarget(ast, 'd-title')
+const label = getAChildTarget(ast, 'd-label')
 const origin = getAChildTarget(ast, 'd-origin')
 const mean = getAChildTarget(ast, 'd-mean')
 const pronunciation = getAChildTarget(ast, 'd-pronunciation')
@@ -55,13 +58,23 @@ function nomalizeKey(text) {
   return text.trim().match(regex).join('').substr(':')
 }
 
-function loopGet(target) {
+function regexLabel(text) {
+  const regex = new RegExp(/([A-Z])\w+/, 'g')
+  return text.match(regex)[0]
+}
+
+function loopGet(target, start?, end?, regex?) {
   const rootChildren = target.children
   return rootChildren.map((child) => {
     const d = getChildrenTarget(child, 'd-inner')
     if (!d) return
     const rd = getAChildTarget(d, 'TEXT').text
-    return nomalize(rd.slice(5))
+
+    if (regex) {
+      return regexLabel(rd)
+    }
+
+    return nomalize(rd.slice(start, end)) + ' '
   })
 }
 
@@ -80,10 +93,11 @@ const content = uglyContent.slice(15, -15)
 const result = `
 ---
 title:${nomalize(titleText)}
+label:[${loopGet(label, undefined, undefined, true).filter((t) => t)}]
 origin: ${nomalizeKey(originText)}
 pronunciation: ${nomalizeKey(pronunciationText)}
 mean: ${nomalizeKey(meanText)}
-relation: [${loopGet(relation).filter((t) => t)}]
+relation: [${loopGet(relation, 5).filter((t) => t)}]
 slug: "/${nomalize(titleText)[0]}/${nomalize(titleText)}"
 ---
 
