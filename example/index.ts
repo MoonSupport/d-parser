@@ -3,94 +3,107 @@ import path from 'path'
 import { parser } from '../src/index'
 import showdown from 'showdown'
 
-const f = fs
-  .readFileSync(path.join(__dirname, '../', 'DIC/A/Agnostic.md'))
-  .toString()
-const ast = parser(f)
-const title = getAChildTarget(ast, 'd-title')
-const label = getAChildTarget(ast, 'd-label')
-const origin = getAChildTarget(ast, 'd-origin')
-const mean = getAChildTarget(ast, 'd-mean')
-const pronunciation = getAChildTarget(ast, 'd-pronunciation')
-const relation = getAChildTarget(ast, 'd-relation')
+const dd = fs.readdirSync(path.join(__dirname, '../', 'DIC/'))
 
-const titleText = getAChildTarget(title, 'TEXT').text
-const originText = getAChildTarget(origin, 'TEXT').text
-const pronunciationText = getAChildTarget(pronunciation, 'TEXT').text
-let meanText = getAChildTarget(mean, 'span')
+dd.map((alp) => {
+  const d = fs.readdirSync(path.join(__dirname, '../', `DIC/${alp}`))
+  d.map((file) => {
+    const output = makeOutput(alp, file)
+    console.log('output', output)
+  })
+})
 
-if (meanText && meanText.children && meanText.children.length > 0) {
-  meanText = getAChildTarget(meanText, 'TEXT').text
-} else {
-  meanText = getAChildTarget(mean, 'TEXT').text
-}
+function makeOutput(alp, file) {
+  const f = fs
+    .readFileSync(path.join(__dirname, '../', `DIC/${alp}/${file}`))
+    .toString()
+  const ast = parser(f)
+  const title = getAChildTarget(ast, 'd-title')
+  const label = getAChildTarget(ast, 'd-label')
+  const origin = getAChildTarget(ast, 'd-origin')
+  const mean = getAChildTarget(ast, 'd-mean')
+  const pronunciation = getAChildTarget(ast, 'd-pronunciation')
+  const relation = getAChildTarget(ast, 'd-relation')
 
-function getAChildTarget(ast, target) {
-  if (!ast || !ast.children) {
-    return
+  const titleText = getAChildTarget(title, 'TEXT').text
+  const originText = getAChildTarget(origin, 'TEXT').text
+  const pronunciationText = getAChildTarget(pronunciation, 'TEXT').text
+  let meanText = getAChildTarget(mean, 'span')
+
+  if (meanText && meanText.children && meanText.children.length > 0) {
+    meanText = getAChildTarget(meanText, 'TEXT').text
+  } else {
+    meanText = getAChildTarget(mean, 'TEXT').text
   }
-  return ast.children.filter((value) => {
-    if (value.name) return value.name == target
-    if (value.type) return value.type == target
-  })[0]
-}
 
-function getChildrenTarget(ast, target) {
-  if (!ast) {
-    return
+  function getAChildTarget(ast, target) {
+    if (!ast || !ast.children) {
+      return
+    }
+    return ast.children.filter((value) => {
+      if (value.name) return value.name == target
+      if (value.type) return value.type == target
+    })[0]
   }
-  if (ast.name == target) return ast
-  if (ast.type == target) return ast
-}
 
-function nomalize(text) {
-  // prettier-ignore
-  const regex = new RegExp('[^\n #]', 'g')
-  return text.trim().match(regex).join('')
-}
+  function getChildrenTarget(ast, target) {
+    if (!ast) {
+      return
+    }
+    if (ast.name == target) return ast
+    if (ast.type == target) return ast
+  }
 
-function nomalizeKey(text) {
-  // prettier-ignore
-  if (!text.includes(':')) {
+  function nomalize(text) {
+    // prettier-ignore
+    const regex = new RegExp('[^\n #]', 'g')
+    return text.trim().match(regex).join('')
+  }
+
+  function nomalizeKey(text) {
+    // prettier-ignore
+    if (!text.includes(':')) {
     return text
   }
-  const regex = new RegExp(':.*', 'g')
-  return text.trim().match(regex).join('').substr(':')
-}
+    const regex = new RegExp(':.*', 'g')
+    return text.trim().match(regex).join('').substr(':')
+  }
 
-function regexLabel(text) {
-  const regex = new RegExp(/([A-Z])\w+/, 'g')
-  return text.match(regex)[0]
-}
+  function regexLabel(text) {
+    const regex = new RegExp(/([A-Z])\w+/, 'g')
+    return text.match(regex)[0]
+  }
 
-function loopGet(target, start?, end?, regex?) {
-  const rootChildren = target.children
-  return rootChildren.map((child) => {
-    const d = getChildrenTarget(child, 'd-inner')
-    if (!d) return
-    const rd = getAChildTarget(d, 'TEXT').text
+  function loopGet(target, start?, end?, regex?) {
+    if (!target) return []
 
-    if (regex) {
-      return regexLabel(rd)
-    }
+    const rootChildren = target.children
+    return rootChildren.map((child) => {
+      const d = getChildrenTarget(child, 'd-inner')
+      if (!d) return
+      const rd = getAChildTarget(d, 'TEXT').text
 
-    return nomalize(rd.slice(start, end)) + ' '
-  })
-}
+      if (regex) {
+        return regexLabel(rd)
+      }
 
-const converter = new showdown.Converter()
-const html = converter.makeHtml(f)
+      return nomalize(rd.slice(start, end)) + ' '
+    })
+  }
 
-const regex = new RegExp('\n', 'g')
+  const converter = new showdown.Converter()
+  const html = converter.makeHtml(f)
 
-const uglyHtml = html.replace(regex, '')
+  const regex = new RegExp('\n', 'g')
 
-const contentRegex = new RegExp('<d-content>.*</d-content>', 'g')
+  const uglyHtml = html.replace(regex, '')
 
-const uglyContent = uglyHtml.match(contentRegex)[0]
-const content = uglyContent.slice(15, -15)
+  const contentRegex = new RegExp('<d-content>.*</d-content>', 'g')
 
-const result = `
+  const uglyContent = uglyHtml.match(contentRegex)[0]
+  const content = uglyContent.slice(15, -15)
+
+  const result = `
 ---
 title:${nomalize(titleText)}
 label:[${loopGet(label, undefined, undefined, true).filter((t) => t)}]
@@ -105,5 +118,5 @@ slug: "/${nomalize(titleText)[0]}/${nomalize(titleText)}"
 ${content}
 </content>
 `
-
-console.log('result', result)
+  return result
+}
