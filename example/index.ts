@@ -5,13 +5,34 @@ import showdown from 'showdown'
 
 const dd = fs.readdirSync(path.join(__dirname, '../', 'DIC/'))
 
+if (!fs.existsSync(path.join(__dirname, '../', `output`))) {
+  fs.mkdirSync(path.join(__dirname, '../', `output`))
+}
+
 dd.map((alp) => {
   const d = fs.readdirSync(path.join(__dirname, '../', `DIC/${alp}`))
+
+  if (!fs.existsSync(path.join(__dirname, '../', `output/${alp}`))) {
+    fs.mkdirSync(path.join(__dirname, '../', `output/${alp}`))
+  }
+
   d.map((file) => {
     const output = makeOutput(alp, file)
-    console.log('output', output)
+
+    fs.writeFile(
+      path.join(__dirname, '../', `output/${alp}/${file}`),
+      output,
+      function (err) {
+        if (err) throw err
+        console.log('File is created successfully.')
+      },
+    )
   })
 })
+
+// const a = makeOutput('C', 'Coroutine.md')
+
+// console.log(a)
 
 function makeOutput(alp, file) {
   const f = fs
@@ -64,9 +85,12 @@ function makeOutput(alp, file) {
     // prettier-ignore
     if (!text.includes(':')) {
     return text
-  }
-    const regex = new RegExp(':.*', 'g')
-    return text.trim().match(regex).join('').substr(':')
+    }
+    const regex = new RegExp('.*: ', 'g')
+    if (!text.trim().match(regex)) {
+      return ''
+    }
+    return text.trim().replace(regex, '')
   }
 
   function regexLabel(text) {
@@ -91,31 +115,34 @@ function makeOutput(alp, file) {
     })
   }
 
-  const converter = new showdown.Converter()
+  const converter = new showdown.Converter({
+    simpleLineBreaks: true,
+    omitExtraWLInCodeBlocks: true,
+    ghCodeBlocks: true,
+  })
+  converter.setFlavor('github')
+
   const html = converter.makeHtml(f)
 
-  const regex = new RegExp('\n', 'g')
+  const contentRegex = new RegExp('<d-content>.*</d-content>', 'gs')
 
-  const uglyHtml = html.replace(regex, '')
-
-  const contentRegex = new RegExp('<d-content>.*</d-content>', 'g')
-
-  const uglyContent = uglyHtml.match(contentRegex)[0]
+  const uglyContent = html.match(contentRegex)[0]
   const content = uglyContent.slice(15, -15)
 
-  const result = `
----
-title:${nomalize(titleText)}
-label:[${loopGet(label, undefined, undefined, true).filter((t) => t)}]
+  const result = `---
+title: ${nomalize(titleText)}
+label: [${loopGet(label, undefined, undefined, true).filter((t) => t)}]
 origin: ${nomalizeKey(originText)}
 pronunciation: ${nomalizeKey(pronunciationText)}
 mean: ${nomalizeKey(meanText)}
 relation: [${loopGet(relation, 5).filter((t) => t)}]
-slug: "/${nomalize(titleText)[0]}/${nomalize(titleText)}"
+slug: /${nomalize(titleText)[0]}/${nomalize(titleText)}
 ---
 
 <content>
+
 ${content}
+
 </content>
 `
   return result
